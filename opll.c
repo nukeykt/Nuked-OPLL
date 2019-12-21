@@ -771,7 +771,7 @@ void OPLL_Channel(opll_t *chip) {
     int16_t ch_out = chip->ch_out;
     uint8_t ismod = (chip->cycles / 3) & 1;
     uint8_t mute_m = ismod || ((chip->rm_enable&0x40) && (chip->cycles+15)%18 >= 12);
-    uint8_t mute_r = !mute_m;
+    uint8_t mute_r = 1;
     if (chip->chip_type == opll_type_ds1001) {
         chip->output_m = chip->ch_out;
         if (chip->output_m >= 0) {
@@ -808,22 +808,27 @@ void OPLL_Channel(opll_t *chip) {
             case 0:
             case 9:
                 ch_out = chip->ch_out_hh;
+                mute_r = 0;;
                 break;
             case 1:
             case 10:
                 ch_out = chip->ch_out_tm;
+                mute_r = 0;
                 break;
             case 2:
             case 11:
                 ch_out = chip->ch_out_bd;
+                mute_r = 0;
                 break;
             case 3:
             case 15:
                 ch_out = chip->ch_out_sd;
+                mute_r = 0;
                 break;
             case 4:
             case 16:
                 ch_out = chip->ch_out_tc;
+                mute_r = 0;
                 break;
             }
         }
