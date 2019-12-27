@@ -773,7 +773,7 @@ void OPLL_Channel(opll_t *chip) {
     uint8_t mute_m = ismod || ((chip->rm_enable&0x40) && (chip->cycles+15)%18 >= 12);
     uint8_t mute_r = 1;
     if (chip->chip_type == opll_type_ds1001) {
-        chip->output_m = chip->ch_out;
+        chip->output_m = ch_out;
         if (chip->output_m >= 0) {
             chip->output_m++;
         }
@@ -783,51 +783,19 @@ void OPLL_Channel(opll_t *chip) {
         chip->output_r = 0;
         return;
     } else {
-        /* This might be incorrect */
-        if ((chip->rm_enable & 0x80)) {
-            switch (chip->cycles) {
-            case 16:
-                chip->ch_out_hh = chip->ch_out;
-                break;
-            case 17:
-                chip->ch_out_tm = chip->ch_out;
-                break;
-            case 0:
-                chip->ch_out_bd = chip->ch_out;
-                break;
-            case 1:
-                chip->ch_out_sd = chip->ch_out;
-                break;
-            case 2:
-                chip->ch_out_tc = chip->ch_out;
-                break;
-            }
-        }
+        /* TODO: This might be incorrect */
         if ((chip->rm_enable & 0x40)) {
             switch (chip->cycles) {
-            case 0:
-            case 9:
-                ch_out = chip->ch_out_hh;
-                mute_r = 0;;
-                break;
-            case 1:
-            case 10:
-                ch_out = chip->ch_out_tm;
-                mute_r = 0;
-                break;
-            case 2:
-            case 11:
-                ch_out = chip->ch_out_bd;
-                mute_r = 0;
-                break;
-            case 3:
-            case 15:
-                ch_out = chip->ch_out_sd;
-                mute_r = 0;
-                break;
-            case 4:
-            case 16:
-                ch_out = chip->ch_out_tc;
+            case 16: /* HH */
+            case 17: /* TOM */
+            case 0: /* BD */
+            case 1: /* SD */
+            case 2: /* TC */
+            case 3: /* HH */
+            case 4: /* TOM */
+            case 5: /* BD */
+            case 9: /* TOM */
+            case 10: /* TOM */
                 mute_r = 0;
                 break;
             }
@@ -866,6 +834,7 @@ void OPLL_Operator(opll_t *chip) {
     int16_t output;
     uint32_t level;
     uint32_t phase;
+    int16_t routput;
     if ((chip->rm_enable & 0x80) && (chip->cycles == 15 || chip->cycles == 16)) {
         ismod1 = 0;
     } else {
@@ -925,7 +894,51 @@ void OPLL_Operator(opll_t *chip) {
     }
     chip->op_mod = output&0x1ff;
 
-    chip->ch_out = ismod1 ? 0 : (output>>3);
+    if (chip->chip_type == opll_type_ds1001) {
+        routput = 0;
+    } else {
+        switch (chip->cycles) {
+        case 2:
+            routput = chip->ch_out_hh;
+            break;
+        case 3:
+            routput = chip->ch_out_tm;
+            break;
+        case 4:
+            routput = chip->ch_out_bd;
+            break;
+        case 8:
+            routput = chip->ch_out_sd;
+            break;
+        case 9:
+            routput = chip->ch_out_tc;
+            break;
+        default:
+            routput = 0; /* TODO: Not quite true */
+            break;
+        }
+        switch (chip->cycles) {
+        case 15:
+            chip->ch_out_hh = output>>3;
+            break;
+        case 16:
+            chip->ch_out_tm = output>>3;
+            break;
+        case 17:
+            chip->ch_out_bd = output>>3;
+            break;
+        case 0:
+            chip->ch_out_sd = output>>3;
+            break;
+        case 1:
+            chip->ch_out_tc = output>>3;
+            break;
+        default:
+            break;
+        }
+    }
+
+    chip->ch_out = ismod1 ? routput : (output>>3);
 }
 
 void OPLL_DoRhythm(opll_t *chip) {
