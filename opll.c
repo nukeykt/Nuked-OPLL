@@ -448,7 +448,7 @@ void OPLL_PhaseGenerate(opll_t *chip) {
             rm_bit = (chip->rm_hh_bit2 ^ chip->rm_hh_bit7)
                    | (chip->rm_hh_bit3 ^ chip->rm_tc_bit5)
                    | (chip->rm_tc_bit3 ^ chip->rm_tc_bit5);
-            pg_out = (rm_bit << 9) | 0x80;
+            pg_out = (rm_bit << 9) | 0x100;
             break;
         default:
             pg_out = phase >> 9;
