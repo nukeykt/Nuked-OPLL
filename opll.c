@@ -608,7 +608,7 @@ void OPLL_EnvelopeGenerate(opll_t *chip) {
     next_state = eg_num_attack;
 
     step = 0;
-    sl = chip->eg_sl & 15;
+    sl = chip->eg_sl;
 
     switch (state) {
     case eg_num_attack:
@@ -762,8 +762,7 @@ void OPLL_EnvelopeGenerate(opll_t *chip) {
     if (chip->eg_rate & 0x40) {
         chip->eg_rate = 0x3c | (ksr & 3);
     }
-    chip->eg_sl <<= 4;
-    chip->eg_sl |= chip->c_sl;
+    chip->eg_sl = chip->c_sl;
 }
 
 void OPLL_Channel(opll_t *chip) {
