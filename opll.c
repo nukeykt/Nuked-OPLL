@@ -472,17 +472,17 @@ void OPLL_PhaseCalcIncrement(opll_t *chip) {
             break;
         case 1:
         case 3:
-            freq += freq >> 7;
+            freq += freq >> 8;
             break;
         case 2:
-            freq += freq >> 8;
+            freq += freq >> 7;
             break;
         case 5:
         case 7:
-            freq -= freq >> 7;
+            freq -= freq >> 8;
             break;
         case 6:
-            freq -= freq >> 8;
+            freq -= freq >> 7;
             break;
         }
     }
