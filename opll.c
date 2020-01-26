@@ -1004,8 +1004,8 @@ void OPLL_Clock(opll_t *chip, int32_t *buffer) {
     if (chip->cycles == 0) {
         chip->lfo_am_out = (chip->lfo_am_counter >> 3) & 0x0f;
     }
-    OPLL_DoModeWrite(chip);
     chip->rm_enable >>= 1;
+    OPLL_DoModeWrite(chip);
     chip->rm_select++;
     if (chip->rm_select > rm_num_tc) {
         chip->rm_select = rm_num_tc + 1;
