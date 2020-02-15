@@ -31,6 +31,7 @@ enum {
     opll_type_ym2413b,          /* Yamaha YM2413B */
     opll_type_ymf281,           /* Yamaha YMF281  */
     opll_type_ymf281b,          /* Yamaha YMF281B */
+    opll_type_ym2420,           /* Yamaha YM2420  */
 };
 
 enum {

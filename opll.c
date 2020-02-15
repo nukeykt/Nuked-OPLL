@@ -285,6 +285,7 @@ void OPLL_Reset(opll_t *chip, uint32_t chip_type) {
         break;
     case opll_type_ym2413:
     case opll_type_ym2413b:
+    case opll_type_ym2420:
     default:
         chip->patchrom = patch_ym2413;
         break;
@@ -321,11 +322,22 @@ void OPLL_DoRegWrite(opll_t *chip) {
             channel = chip->cycles % 9;
             switch (chip->address & 0xf0) {
             case 0x10:
-                chip->fnum[channel] = (chip->fnum[channel] & 0x100) | chip->data;
+                if (chip->chip_type == opll_type_ym2420)
+                {
+                    chip->fnum[channel] = (chip->fnum[channel] & 0x0f) | ((chip->data & 0x1f) << 4);
+                    chip->block[channel] = (chip->data >> 5) & 0x07;
+                }
+                else
+                    chip->fnum[channel] = (chip->fnum[channel] & 0x100) | chip->data;
                 break;
             case 0x20:
-                chip->fnum[channel] = (chip->fnum[channel] & 0xff) | ((chip->data & 0x01) << 8);
-                chip->block[channel] = (chip->data >> 1) & 0x07;
+                if (chip->chip_type == opll_type_ym2420)
+                    chip->fnum[channel] = (chip->fnum[channel] & 0x1f0) | (chip->data & 0x0f);
+                else
+                {
+                    chip->fnum[channel] = (chip->fnum[channel] & 0xff) | ((chip->data & 0x01) << 8);
+                    chip->block[channel] = (chip->data >> 1) & 0x07;
+                }
                 chip->kon[channel] = (chip->data >> 4) & 0x01;
                 chip->son[channel] = (chip->data >> 5) & 0x01;
                 break;
