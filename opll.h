@@ -17,7 +17,7 @@
  *      siliconpr0n.org(digshadow, John McMaster):
  *          VRC VII decap and die shot.
  *
- *  version: 1.0
+ *  version: 1.0.1
  */
 
 #ifndef OPLL_H
@@ -32,6 +32,7 @@ enum {
     opll_type_ymf281,           /* Yamaha YMF281  */
     opll_type_ymf281b,          /* Yamaha YMF281B */
     opll_type_ym2420,           /* Yamaha YM2420  */
+    opll_type_ym2423,           /* Yamaha YM2423  */
 };
 
 enum {
