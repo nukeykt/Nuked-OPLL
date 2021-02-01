@@ -230,7 +230,7 @@ static const uint32_t eg_ksltable[16] = {
     0, 32, 40, 45, 48, 51, 53, 55, 56, 58, 59, 60, 61, 62, 63, 64
 };
 
-void OPLL_DoIO(opll_t *chip) {
+static void OPLL_DoIO(opll_t *chip) {
     /* Write signal check */
     chip->write_a_en = (chip->write_a & 0x03) == 0x01;
     chip->write_d_en = (chip->write_d & 0x03) == 0x01;
@@ -238,7 +238,7 @@ void OPLL_DoIO(opll_t *chip) {
     chip->write_d <<= 1;
 }
 
-void OPLL_DoModeWrite(opll_t *chip) {
+static void OPLL_DoModeWrite(opll_t *chip) {
     uint8_t slot;
     if ((chip->write_mode_address & 0x10) && chip->write_d_en) {
         slot = chip->write_mode_address & 0x01;
@@ -326,7 +326,7 @@ void OPLL_Reset(opll_t *chip, uint32_t chip_type) {
     chip->rm_select = rm_num_tc + 1;
 }
 
-void OPLL_DoRegWrite(opll_t *chip) {
+static void OPLL_DoRegWrite(opll_t *chip) {
     uint32_t channel;
 
     /* Address */
@@ -393,7 +393,8 @@ void OPLL_DoRegWrite(opll_t *chip) {
     }
 
 }
-void OPLL_PreparePatch1(opll_t *chip) {
+
+static void OPLL_PreparePatch1(opll_t *chip) {
     uint8_t instr;
     uint32_t mcsel = ((chip->cycles + 1) / 3) & 0x01;
     uint32_t instr_index;
@@ -430,7 +431,7 @@ void OPLL_PreparePatch1(opll_t *chip) {
     chip->c_ksl_block = (chip->block[ch]);
 }
 
-void OPLL_PreparePatch2(opll_t *chip) {
+static void OPLL_PreparePatch2(opll_t *chip) {
     uint8_t instr;
     uint32_t mcsel = ((chip->cycles + 1) / 3) & 0x01;
     uint32_t instr_index;
@@ -462,7 +463,7 @@ void OPLL_PreparePatch2(opll_t *chip) {
     chip->c_dm |= patch->dm;
 }
 
-void OPLL_PhaseGenerate(opll_t *chip) {
+static void OPLL_PhaseGenerate(opll_t *chip) {
     uint32_t ismod;
     uint32_t phase;
     uint8_t rm_bit;
@@ -528,7 +529,7 @@ void OPLL_PhaseGenerate(opll_t *chip) {
     chip->pg_out = pg_out;
 }
 
-void OPLL_PhaseCalcIncrement(opll_t *chip) {
+static void OPLL_PhaseCalcIncrement(opll_t *chip) {
     uint32_t freq;
     uint16_t block;
     freq = chip->c_fnum << 1;
@@ -561,8 +562,7 @@ void OPLL_PhaseCalcIncrement(opll_t *chip) {
     chip->pg_inc = (freq * pg_multi[chip->c_multi]) >> 1;
 }
 
-void OPLL_EnvelopeKSLTL(opll_t *chip)
-{
+static void OPLL_EnvelopeKSLTL(opll_t *chip) {
     int32_t ksl;
 
     ksl = eg_ksltable[chip->c_ksl_freq]-((8-chip->c_ksl_block)<<3);
@@ -581,8 +581,7 @@ void OPLL_EnvelopeKSLTL(opll_t *chip)
     chip->eg_ksltl = ksl + (chip->c_tl<<1);
 }
 
-void OPLL_EnvelopeOutput(opll_t *chip)
-{
+static void OPLL_EnvelopeOutput(opll_t *chip) {
     int32_t level = chip->eg_level[(chip->cycles+17)%18];
 
     level += chip->eg_ksltl;
@@ -602,7 +601,7 @@ void OPLL_EnvelopeOutput(opll_t *chip)
     chip->eg_out = level;
 }
 
-void OPLL_EnvelopeGenerate(opll_t *chip) {
+static void OPLL_EnvelopeGenerate(opll_t *chip) {
     uint8_t timer_inc;
     uint8_t timer_bit;
     uint8_t timer_low;
@@ -834,7 +833,7 @@ void OPLL_EnvelopeGenerate(opll_t *chip) {
     chip->eg_sl = chip->c_sl;
 }
 
-void OPLL_Channel(opll_t *chip) {
+static void OPLL_Channel(opll_t *chip) {
     int16_t sign;
     int16_t ch_out = chip->ch_out;
     uint8_t ismod = (chip->cycles / 3) & 1;
@@ -895,7 +894,7 @@ void OPLL_Channel(opll_t *chip) {
     }
 }
 
-void OPLL_Operator(opll_t *chip) {
+static void OPLL_Operator(opll_t *chip) {
     uint8_t ismod1, ismod2, ismod3;
     uint32_t op_mod;
     uint16_t exp_shift;
@@ -1009,7 +1008,7 @@ void OPLL_Operator(opll_t *chip) {
     chip->ch_out = ismod1 ? routput : (output>>3);
 }
 
-void OPLL_DoRhythm(opll_t *chip) {
+static void OPLL_DoRhythm(opll_t *chip) {
     uint8_t nbit;
 
     /* Noise */
@@ -1018,7 +1017,7 @@ void OPLL_DoRhythm(opll_t *chip) {
     chip->rm_noise = (nbit << 22) | (chip->rm_noise >> 1);
 }
 
-void OPLL_DoLFO(opll_t *chip) {
+static void OPLL_DoLFO(opll_t *chip) {
     uint8_t vib_step;
     uint8_t am_inc = 0;
     uint8_t am_bit;
