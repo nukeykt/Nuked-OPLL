@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Nuke.YKT
+ * Copyright (C) 2019-2023 Nuke.YKT
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
  *      siliconpr0n.org(digshadow, John McMaster):
  *          VRC VII decap and die shot.
  *
- *  version: 1.0.1
+ *  version: 1.0.2
  */
 
 #include <string.h>
@@ -995,6 +995,9 @@ static void OPLL_Operator(opll_t *chip) {
             break;
         }
     }
+
+    if (!(chip->rm_enable & 0x80))
+        routput = 0;
 
     chip->ch_out = ismod1 ? routput : (output>>3);
 }
